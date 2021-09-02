@@ -224,6 +224,31 @@ class Canvas{
 	}
 
 	/**
+	 * 多角形を描画します。  
+	 * vertexesにはX座標とY座標を交互に入れた配列を指定します。(例: `[0, 0, 100, 0, 50, 50]`)  
+	 * colorを省略するか`null`を指定した場合は直前に使用された色が使われます。
+	 * @param {Array} vertexes 
+	 * @param {string | CanvasGradient | CanvasPattern} color 描画色(デフォルト: `null`)
+	 * @param {boolean} isFill 塗りつぶしフラグ(デフォルト: `true`)
+	 */
+	drawPolygon(vertexes, color = null, isFill = true){
+		if(vertexes == null || vertexes.length < 2)return;
+		this._context.beginPath();
+		this._context.lineTo(vertexes[0], vertexes[1]);
+		for(let i = 2; i < vertexes.length; i += 2){
+			this._context.moveTo(vertexes[i], vertexes[i + 1]);
+		}
+		this._context.closePath();
+		if(isFill){
+			if(color !== null)this._context.fillStyle = color;
+			this._context.fill();
+		}else{
+			if(color !== null)this._context.strokeStyle = color;
+			this._context.stroke();
+		}
+	}
+
+	/**
 	 * 文字列を描画します。  
 	 * colorを省略するか`null`を指定した場合は直前に使用された色が使われます。
 	 * @param {number} x 始点x
