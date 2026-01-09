@@ -1,4 +1,11 @@
-class Canvas{
+export default class Canvas{
+	#canvas;
+	#context;
+	#usePositionFix;
+	#fontDecorations;
+	#fontSize;
+	#fontFamily;
+	
 	/**
 	 * Canvasを作成します。
 	 * @param {number} width Canvasの幅
@@ -6,16 +13,16 @@ class Canvas{
 	 * @param {object} options オプション(デフォルト: `{}`)
 	 */
 	constructor(width, height, options = {}){
-		this._canvas = document.createElement('canvas');
-		this._canvas.width = width;
-		this._canvas.height = height;
-		this._context = this._canvas.getContext('2d');
-		this._usePositionFix = (options.usePositionFix != null ? options.usePositionFix : true);
-		this._context.textAlign = 'left';
-		this._context.textBaseline = 'top';
-		this._fontDecorations = [];
-		this._fontSize = '10px';
-		this._fontFamily = 'sans-serif';
+		this.#canvas = document.createElement('canvas');
+		this.#canvas.width = width;
+		this.#canvas.height = height;
+		this.#context = this.#canvas.getContext('2d');
+		this.#usePositionFix = (options.usePositionFix != null ? options.usePositionFix : true);
+		this.#context.textAlign = 'left';
+		this.#context.textBaseline = 'top';
+		this.#fontDecorations = [];
+		this.#fontSize = '10px';
+		this.#fontFamily = 'sans-serif';
 	}
 
 	/**
@@ -23,7 +30,7 @@ class Canvas{
 	 * @return {HTMLCanvasElement} Canvasの要素
 	 */
 	getElement(){
-		return this._canvas;
+		return this.#canvas;
 	}
 
 	/**
@@ -31,7 +38,17 @@ class Canvas{
 	 * @return {CanvasRenderingContext2D} Canvasのコンテキスト
 	 */
 	getContext(){
-		return this._context;
+		return this.#context;
+	}
+
+	/**
+	 * Canvasのサイズを変更します。
+	 * @param {number} width Canvasの幅
+	 * @param {number} height Canvasの高さ
+	 */
+	setSize(width, height){
+		this.#canvas.width = width;
+		this.#canvas.height = height;
 	}
 
 	/**
@@ -39,7 +56,7 @@ class Canvas{
 	 * @return {number} Canvasの幅
 	 */
 	getWidth(){
-		return this._canvas.width;
+		return this.#canvas.width;
 	}
 
 	/**
@@ -47,11 +64,11 @@ class Canvas{
 	 * @return {number} Canvasの高さ
 	 */
 	getHeight(){
-		return this._canvas.height;
+		return this.#canvas.height;
 	}
 
-	_refreshFont(){
-		this._context.font = `${this._fontDecorations.join(' ')} ${this._fontSize} "${this._fontFamily}"`;
+	#refreshFont(){
+		this.#context.font = `${this.#fontDecorations.join(' ')} ${this.#fontSize} ${this.#fontFamily}`;
 	}
 
 	/**
@@ -59,8 +76,8 @@ class Canvas{
 	 * @param {number} size フォントの大きさ(px)
 	 */
 	setFontSize(size){
-		this._fontSize = `${size}px`;
-		this._refreshFont();
+		this.#fontSize = `${size}px`;
+		this.#refreshFont();
 	}
 
 	/**
@@ -68,8 +85,8 @@ class Canvas{
 	 * @param {string} fontFamily フォントファミリ名
 	 */
 	setFontFamily(fontFamily){
-		this._fontFamily = fontFamily;
-		this._refreshFont();
+		this.#fontFamily = fontFamily;
+		this.#refreshFont();
 	}
 
 	/**
@@ -79,8 +96,8 @@ class Canvas{
 	 * @param {Array} decorations 装飾の配列(デフォルト: `[]`)
 	 */
 	setFontDecorations(decorations = []){
-		this._fontDecorations = [...decorations];
-		this._refreshFont();
+		this.#fontDecorations = [...decorations];
+		this.#refreshFont();
 	}
 
 	/**
@@ -91,10 +108,10 @@ class Canvas{
 	 * @param {Array} decorations 装飾の配列(デフォルト: `null`)
 	 */
 	setFont(fontFamily = null, size = null, decorations = null){
-		if(fontFamily !== null)this._fontFamily = fontFamily;
-		if(size !== null)this._fontSize = `${size}px`;
-		if(decorations !== null)this._fontDecorations = [...decorations];
-		this._refreshFont();
+		if(fontFamily !== null)this.#fontFamily = fontFamily;
+		if(size !== null)this.#fontSize = `${size}px`;
+		if(decorations !== null)this.#fontDecorations = [...decorations];
+		this.#refreshFont();
 	}
 
 	/**
@@ -103,7 +120,7 @@ class Canvas{
 	 * @param {string} align テキストの水平位置
 	 */
 	setTextAlign(align){
-		this._context.textAlign = align;
+		this.#context.textAlign = align;
 	}
 
 	/**
@@ -112,7 +129,7 @@ class Canvas{
 	 * @param {string} baseline テキストの垂直位置
 	 */
 	setTextBaseline(baseline){
-		this._context.textBaseline = baseline;
+		this.#context.textBaseline = baseline;
 	}
 
 	/**
@@ -120,7 +137,7 @@ class Canvas{
 	 * @param {number} width 線の太さ
 	 */
 	setLineWidth(width){
-		this._context.lineWidth = width;
+		this.#context.lineWidth = width;
 	}
 
 	/**
@@ -133,17 +150,17 @@ class Canvas{
 	 * @param {string | CanvasGradient | CanvasPattern} color 描画色(デフォルト: `null`)
 	 */
 	drawLine(x1, y1, x2, y2, color = null){
-		if(this._usePositionFix){
+		if(this.#usePositionFix){
 			x1 += 0.5;
 			y1 += 0.5;
 			x2 += 0.5;
 			y2 += 0.5;
 		}
-		if(color !== null)this._context.strokeStyle = color;
-		this._context.beginPath();
-		this._context.moveTo(x1, y1);
-		this._context.lineTo(x2, y2);
-		this._context.stroke();
+		if(color !== null)this.#context.strokeStyle = color;
+		this.#context.beginPath();
+		this.#context.moveTo(x1, y1);
+		this.#context.lineTo(x2, y2);
+		this.#context.stroke();
 	}
 
 	/**
@@ -158,15 +175,15 @@ class Canvas{
 	 */
 	drawRect(x, y, width, height, color = null, isFill = true){
 		if(isFill){
-			if(color !== null)this._context.fillStyle = color;
-			this._context.fillRect(x, y, width, height);
+			if(color !== null)this.#context.fillStyle = color;
+			this.#context.fillRect(x, y, width, height);
 		}else{
-			if(this._usePositionFix){
+			if(this.#usePositionFix){
 				x += 0.5;
 				y += 0.5;
 			}
-			if(color !== null)this._context.strokeStyle = color;
-			this._context.strokeRect(x, y, width, height);
+			if(color !== null)this.#context.strokeStyle = color;
+			this.#context.strokeRect(x, y, width, height);
 		}
 	}
 
@@ -182,22 +199,22 @@ class Canvas{
 	 * @param {boolean} isFill 塗りつぶしフラグ(デフォルト: `true`)
 	 */
 	drawRoundedRect(x, y, width, height, r, color = null, isFill = true){
-		this._context.beginPath();
-		this._context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
-		this._context.arc(x + width - r, y + r, r, Math.PI * 1.5, 0);
-		this._context.arc(x + width - r, y + height - r, r, 0, Math.PI * 0.5);
-		this._context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI);
-		this._context.closePath();
+		this.#context.beginPath();
+		this.#context.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
+		this.#context.arc(x + width - r, y + r, r, Math.PI * 1.5, 0);
+		this.#context.arc(x + width - r, y + height - r, r, 0, Math.PI * 0.5);
+		this.#context.arc(x + r, y + height - r, r, Math.PI * 0.5, Math.PI);
+		this.#context.closePath();
 		if(isFill){
-			if(color !== null)this._context.fillStyle = color;
-			this._context.fill();
+			if(color !== null)this.#context.fillStyle = color;
+			this.#context.fill();
 		}else{
-			if(this._usePositionFix){
+			if(this.#usePositionFix){
 				x += 0.5;
 				y += 0.5;
 			}
-			if(color !== null)this._context.strokeStyle = color;
-			this._context.stroke();
+			if(color !== null)this.#context.strokeStyle = color;
+			this.#context.stroke();
 		}
 	}
 
@@ -211,15 +228,15 @@ class Canvas{
 	 * @param {boolean} isFill 塗りつぶしフラグ(デフォルト: `true`)
 	 */
 	drawCircle(x, y, r, color = null, isFill = true){
-		this._context.beginPath();
-		this._context.arc(x, y, r, 0, Math.PI * 2);
-		this._context.closePath();
+		this.#context.beginPath();
+		this.#context.arc(x, y, r, 0, Math.PI * 2);
+		this.#context.closePath();
 		if(isFill){
-			if(color !== null)this._context.fillStyle = color;
-			this._context.fill();
+			if(color !== null)this.#context.fillStyle = color;
+			this.#context.fill();
 		}else{
-			if(color !== null)this._context.strokeStyle = color;
-			this._context.stroke();
+			if(color !== null)this.#context.strokeStyle = color;
+			this.#context.stroke();
 		}
 	}
 
@@ -233,18 +250,18 @@ class Canvas{
 	 */
 	drawPolygon(vertexes, color = null, isFill = true){
 		if(vertexes == null || vertexes.length < 2)return;
-		this._context.beginPath();
-		this._context.lineTo(vertexes[0], vertexes[1]);
+		this.#context.beginPath();
+		this.#context.lineTo(vertexes[0], vertexes[1]);
 		for(let i = 2; i < vertexes.length; i += 2){
-			this._context.moveTo(vertexes[i], vertexes[i + 1]);
+			this.#context.moveTo(vertexes[i], vertexes[i + 1]);
 		}
-		this._context.closePath();
+		this.#context.closePath();
 		if(isFill){
-			if(color !== null)this._context.fillStyle = color;
-			this._context.fill();
+			if(color !== null)this.#context.fillStyle = color;
+			this.#context.fill();
 		}else{
-			if(color !== null)this._context.strokeStyle = color;
-			this._context.stroke();
+			if(color !== null)this.#context.strokeStyle = color;
+			this.#context.stroke();
 		}
 	}
 
@@ -258,16 +275,16 @@ class Canvas{
 	 * @param {boolean} isFill 塗りつぶしフラグ(デフォルト: `true`)
 	 */
 	drawText(x, y, text, color = null, isFill = true){
-		if(this._usePositionFix){
+		if(this.#usePositionFix){
 			x += 0.5;
 			y += 0.5;
 		}
 		if(isFill){
-			if(color !== null)this._context.fillStyle = color;
-			this._context.fillText(text, x, y);
+			if(color !== null)this.#context.fillStyle = color;
+			this.#context.fillText(text, x, y);
 		}else{
-			if(color !== null)this._context.strokeStyle = color;
-			this._context.strokeText(text, x, y);
+			if(color !== null)this.#context.strokeStyle = color;
+			this.#context.strokeText(text, x, y);
 		}
 	}
 
@@ -277,8 +294,8 @@ class Canvas{
 	 * @param {string | CanvasGradient | CanvasPattern} color 描画色(デフォルト: `null`)
 	 */
 	drawFill(color = null){
-		if(color !== null)this._context.fillStyle = color;
-		this._context.fill();
+		if(color !== null)this.#context.fillStyle = color;
+		this.#context.fill();
 	}
 
 	/**
@@ -287,17 +304,21 @@ class Canvas{
 	 * @param {string | CanvasGradient | CanvasPattern} color 描画色(デフォルト: `null`)
 	 */
 	drawStroke(color = null){
-		if(color !== null)this._context.strokeStyle = color;
-		this._context.stroke();
+		if(color !== null)this.#context.strokeStyle = color;
+		this.#context.stroke();
 	}
 
 	/**
 	 * キャンバス全体を指定した色でクリアします。  
-	 * colorを省略するか`null`を指定した場合は直前に使用された色が使われます。
+	 * colorを省略するか`null`を指定した場合は直前に使用された色が使われます。  
+	 * colorに`'clear'`を指定した場合はキャンバス全体を透明色でクリアします。
 	 * @param {string | CanvasGradient | CanvasPattern} color クリアする色(デフォルト: `null`)
 	 */
 	clear(color = null){
-		if(color !== null)this._context.fillStyle = color;
-		this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+		this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+		if(color !== null && color !== 'clear'){
+			this.#context.fillStyle = color;
+			this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+		}
 	}
 }
