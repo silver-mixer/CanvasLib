@@ -1,5 +1,8 @@
 export default class Canvas{
 	#canvas;
+	#pixelRatio;
+	#virtualWidth;
+	#virtualHeight;
 	#context;
 	#usePositionFix;
 	#fontDecorations;
@@ -11,13 +14,20 @@ export default class Canvas{
 	 * @param {number} width Canvasの幅
 	 * @param {number} height Canvasの高さ
 	 * @param {object} options オプション(デフォルト: `{}`)
+	 * @param {boolean} options.usePositionFix 図形描画時の座標補正を使用するか(デフォルト: `true`)
+	 * @param {number} options.pixelRatio 1ピクセルあたりの表示比率(デフォルト: `1`)  
+	 * 高DPI対応をする場合、window.devicePixelRatioを設定する。
 	 */
 	constructor(width, height, options = {}){
 		this.#canvas = document.createElement('canvas');
-		this.#canvas.width = width;
-		this.#canvas.height = height;
+		this.#pixelRatio = (options.pixelRatio ?? 1);
+		this.#virtualWidth = width;
+		this.#virtualHeight = height;
+		this.#canvas.width = Math.floor(width * this.#pixelRatio);
+		this.#canvas.height = Math.floor(height * this.#pixelRatio);
 		this.#context = this.#canvas.getContext('2d');
-		this.#usePositionFix = (options.usePositionFix != null ? options.usePositionFix : true);
+		this.#usePositionFix = (options.usePositionFix ?? true);
+		this.#context.scale(this.#pixelRatio, this.#pixelRatio);
 		this.#context.textAlign = 'left';
 		this.#context.textBaseline = 'top';
 		this.#fontDecorations = [];
@@ -45,26 +55,35 @@ export default class Canvas{
 	 * Canvasのサイズを変更します。
 	 * @param {number} width Canvasの幅
 	 * @param {number} height Canvasの高さ
+	 * @param {object} options オプション(デフォルト: `{}`)
+	 * @param {number} options.pixelRatio 1ピクセルあたりの表示比率(デフォルト: `1`)  
+	 * 高DPI対応をする場合、window.devicePixelRatioを設定する。
 	 */
-	setSize(width, height){
-		this.#canvas.width = width;
-		this.#canvas.height = height;
+	setSize(width, height, options = {}){
+		this.#pixelRatio = (options.pixelRatio ?? 1);
+		this.#virtualWidth = width;
+		this.#virtualHeight = height;
+		this.#canvas.width = Math.floor(width * this.#pixelRatio);
+		this.#canvas.height = Math.floor(height * this.#pixelRatio);
+		this.#context.scale(this.#pixelRatio, this.#pixelRatio);
 	}
 
 	/**
 	 * Canvasの幅を返します。
+	 * @param {boolean} [actualSize=false] ピクセル比率を適用したサイズを返すか(デフォルト: `false`)
 	 * @return {number} Canvasの幅
 	 */
-	getWidth(){
-		return this.#canvas.width;
+	getWidth(actualSize = false){
+		return (actualSize ? this.#canvas.width : this.#virtualWidth);
 	}
 
 	/**
 	 * Canvasの高さを返します。
+	 * @param {boolean} [actualSize=false] ピクセル比率を適用したサイズを返すか(デフォルト: `false`)
 	 * @return {number} Canvasの高さ
 	 */
-	getHeight(){
-		return this.#canvas.height;
+	getHeight(actualSize = false){
+		return (actualSize ? this.#canvas.height : this.#virtualHeight);
 	}
 
 	#refreshFont(){
