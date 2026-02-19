@@ -270,9 +270,9 @@ export default class Canvas{
 	drawPolygon(vertexes, color = null, isFill = true){
 		if(vertexes == null || vertexes.length < 2)return;
 		this.#context.beginPath();
-		this.#context.lineTo(vertexes[0], vertexes[1]);
+		this.#context.moveTo(vertexes[0], vertexes[1]);
 		for(let i = 2; i < vertexes.length; i += 2){
-			this.#context.moveTo(vertexes[i], vertexes[i + 1]);
+			this.#context.lineTo(vertexes[i], vertexes[i + 1]);
 		}
 		this.#context.closePath();
 		if(isFill){
